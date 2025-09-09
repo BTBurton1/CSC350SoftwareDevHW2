@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 // #1 the ourAnimals array will store the following: 
 string animalSpecies = "";
 string animalID = "";
@@ -158,20 +155,26 @@ do
 
             Array.Sort(terms, StringComparer.Ordinal);
 
-            // >>> Spinner goes once total, before searching dogs <<<
+            // >>> Clean spinner countdown: rotates icons, ticks down 2 → 1 → 0 <<<
             string[] spinnerIcons = { "|", "/", "-", "\\" };
             int spinSeconds = Math.Max(1, terms.Length);
             int termIndex = -1;
+            int iconIndex = 0;
 
             for (int remaining = spinSeconds; remaining >= 0; remaining--)
             {
+                // move to the next search term each second
                 termIndex = (termIndex + 1) % terms.Length;
                 string currentTerm = terms[termIndex];
 
-                for (int f = 0; f < spinnerIcons.Length; f++)
+                // spin for one second
+                int framesPerSecond = 6;
+                for (int f = 0; f < framesPerSecond; f++)
                 {
-                    Console.Write("\rsearching for " + currentTerm + " " + spinnerIcons[f] + " / " + remaining);
-                    System.Threading.Thread.Sleep(120);
+                    string countdown = (remaining == 0) ? "0" : $"{remaining}/{spinSeconds}";
+                    Console.Write($"\rsearching for {currentTerm} {spinnerIcons[iconIndex % spinnerIcons.Length]} {countdown}   ");
+                    iconIndex++;
+                    System.Threading.Thread.Sleep(1000 / framesPerSecond);
                 }
             }
 
