@@ -66,7 +66,6 @@ for (int i = 0; i < maxPets; i++)
             animalPersonalityDescription = "";
             animalNickname = "";
             break;
-
     }
 
     ourAnimals[i, 0] = "ID #: " + animalID;
@@ -158,11 +157,48 @@ do
 
             bool noMatchesDog = true;
             string dogDescription = "";
+
             // #6 loop through the ourAnimals array to search for matching animals
             for (int i = 0; i < maxPets; i++)
             {
                 if (ourAnimals[i, 1].Contains("dog"))
                 {
+                    // get a clean nickname string to display in the spinner text
+                    string nickLabeled = ourAnimals[i, 3] ?? "";
+                    string dogName = nickLabeled.StartsWith("Nickname: ", StringComparison.OrdinalIgnoreCase)
+                        ? nickLabeled.Substring("Nickname: ".Length)
+                        : nickLabeled;
+
+                    // >>> Inline spinner per dog, cycles through characteristics as it counts down <<<
+                    string[] spinnerIcons = { "|", "/", "-", "\\" };
+                    int spinSeconds = Math.Max(1, terms.Length);
+                    DateTime end = DateTime.UtcNow.AddSeconds(spinSeconds);
+                    int s = 0;
+                    int lastRemaining = -1;
+                    int termIndex = -1; // start before 0 so the first tick advances to 0
+
+                    while (DateTime.UtcNow < end)
+                    {
+                        int remaining = Math.Max(0, (int)Math.Ceiling((end - DateTime.UtcNow).TotalSeconds));
+
+                        // advance to the next term when the displayed remaining second changes
+                        if (remaining != lastRemaining)
+                        {
+                            termIndex = (termIndex + 1) % terms.Length;
+                            lastRemaining = remaining;
+                        }
+
+                        string currentTerm = terms[termIndex];
+                        string dogLabel = string.IsNullOrWhiteSpace(dogName) ? nickLabeled : $"Nickname: {dogName}";
+                        Console.Write("\rsearching our dog " + dogLabel + " for " + currentTerm + " " + spinnerIcons[s % spinnerIcons.Length] + " / " + remaining);
+
+                        s++;
+                        System.Threading.Thread.Sleep(120);
+                    }
+
+                    // clear the spinner line after finishing
+                    Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+
                     // #7 Search combined descriptions and report results
                     dogDescription = ourAnimals[i, 4] + "\n" + ourAnimals[i, 5];
                     string combinedLower = dogDescription.ToLower();
@@ -172,11 +208,6 @@ do
                     {
                         if (combinedLower.Contains(term))
                         {
-                            string nickLabeled = ourAnimals[i, 3] ?? "";
-                            string dogName = nickLabeled.StartsWith("Nickname: ", StringComparison.OrdinalIgnoreCase)
-                                ? nickLabeled.Substring("Nickname: ".Length)
-                                : nickLabeled;
-
                             Console.WriteLine($"\nOur dog {dogName} is a match for your search for {term}!");
                             matchedThisDog = true;
                         }
@@ -198,7 +229,6 @@ do
             Console.WriteLine("Press the Enter key to continue.");
             readResult = Console.ReadLine();
             break;
-
 
         default:
             break;
