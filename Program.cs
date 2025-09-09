@@ -128,13 +128,34 @@ do
             while (dogCharacteristic == "")
             {
                 // have the user enter physical characteristics to search for
-                Console.WriteLine($"\nEnter one desired dog characteristics to search for");
+                Console.WriteLine($"\nEnter the search terms separated by commas");
                 readResult = Console.ReadLine();
                 if (readResult != null)
                 {
-                    dogCharacteristic = readResult.ToLower().Trim();
+                    dogCharacteristic = readResult.Trim();
                 }
             }
+
+            string[] terms = dogCharacteristic
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim().ToLower())
+                .Where(t => t.Length > 0)
+                .ToArray();
+
+            while (terms.Length == 0)
+            {
+                Console.WriteLine("Please enter at least one non-empty search term.");
+                readResult = Console.ReadLine();
+                dogCharacteristic = (readResult ?? "").Trim();
+                terms = dogCharacteristic
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim().ToLower())
+                    .Where(t => t.Length > 0)
+                    .ToArray();
+            }
+
+            Array.Sort(terms, StringComparer.Ordinal);
+
             bool noMatchesDog = true;
             string dogDescription = "";
             // #6 loop through the ourAnimals array to search for matching animals
@@ -144,21 +165,40 @@ do
                 {
                     // #7 Search combined descriptions and report results
                     dogDescription = ourAnimals[i, 4] + "\n" + ourAnimals[i, 5];
-                    if (dogDescription.Contains(dogCharacteristic))
+                    string combinedLower = dogDescription.ToLower();
+
+                    bool matchedThisDog = false;
+                    foreach (var term in terms)
                     {
-                        Console.WriteLine($"\nOur dog {ourAnimals[i, 3]} is a match!");
+                        if (combinedLower.Contains(term))
+                        {
+                            string nickLabeled = ourAnimals[i, 3] ?? "";
+                            string dogName = nickLabeled.StartsWith("Nickname: ", StringComparison.OrdinalIgnoreCase)
+                                ? nickLabeled.Substring("Nickname: ".Length)
+                                : nickLabeled;
+
+                            Console.WriteLine($"\nOur dog {dogName} is a match for your search for {term}!");
+                            matchedThisDog = true;
+                        }
+                    }
+
+                    if (matchedThisDog)
+                    {
+                        Console.WriteLine(ourAnimals[i, 3]);
                         Console.WriteLine(dogDescription);
                         noMatchesDog = false;
                     }
-                    if (noMatchesDog)
-                    {
-                        Console.WriteLine("None of our dogs are a match found for: " + dogCharacteristic);
-                    }
                 }
+            }
+
+            if (noMatchesDog)
+            {
+                Console.WriteLine("No matches found for any available dogs");
             }
             Console.WriteLine("Press the Enter key to continue.");
             readResult = Console.ReadLine();
             break;
+
 
         default:
             break;
