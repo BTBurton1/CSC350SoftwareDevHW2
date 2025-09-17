@@ -6,9 +6,11 @@ string[] pettingZoo =
     "goats", "iguanas", "kangaroos", "lemurs", "llamas", "macaws",
     "ostriches", "pigs", "ponies", "rabbits", "sheep", "tortoises",
 };
+
 PlanSchoolVisit("School A");
 PlanSchoolVisit("School B", 3);
 PlanSchoolVisit("School C", 2);
+
 void PlanSchoolVisit(string schoolName, int groups = 6)
 {
     RandomizeAnimals();
@@ -17,17 +19,17 @@ void PlanSchoolVisit(string schoolName, int groups = 6)
     PrintGroup(group);
 }
 
-void RandomizeAnimals() 
+void RandomizeAnimals()
 {
-    Random random = new Random();
+    Random rand = new Random();
 
-    for (int i = 0; i < pettingZoo.Length; i++) 
+    for (int i = 0; i < pettingZoo.Length; i++)
     {
-        int r = random.Next(i, pettingZoo.Length);
+        int r = rand.Next(i, pettingZoo.Length);
 
-        string temp = pettingZoo[r];
+        string tempZoo = pettingZoo[r];
         pettingZoo[r] = pettingZoo[i];
-        pettingZoo[i] = temp;
+        pettingZoo[i] = tempZoo;
     }
 }
 
@@ -46,11 +48,12 @@ string[,] AssignGroup(int groups = 6)
 
     return result;
 }
+
 void PrintGroup(string[,] group) 
 {
     for (int i = 0; i < group.GetLength(0); i++) 
     {
-        Console.Write($"Group {i + 1}: ");
+        Console.Write($"Zoo Group # {i + 1}: ");
         for (int j = 0; j < group.GetLength(1); j++) 
         {
             Console.Write($"{group[i,j]}  ");
