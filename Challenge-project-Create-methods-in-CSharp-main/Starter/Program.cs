@@ -43,6 +43,12 @@ while (!shouldExit)
     else
     {
         Move(true);  
+        if (PlayerConsumedFood())
+        {
+            ChangePlayer(); 
+            FreezePlayer();
+            ShowFood();     
+        }
     }
 }
 
@@ -124,10 +130,15 @@ void Move(bool allowTerminate = false)
 }
 
 // Clears the console, displays the food and player
-void InitializeGame() 
+void InitializeGame()
 {
     Console.Clear();
     ShowFood();
     Console.SetCursorPosition(0, 0);
     Console.Write(player);
+}
+// Method that checks if player consumed the food
+bool PlayerConsumedFood()
+{
+    return playerX == foodX && playerY == foodY;
 }
